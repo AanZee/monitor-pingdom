@@ -29,7 +29,7 @@ exports.tables = [
 exports.init = function (db) {
 	pingdomApi = require('pingdom-api')(this.config);
 
-	PingdomCheck = require('./models/PingdomCheck');
+	PingdomCheck = require('./models/pingdomCheck');
 	PingdomCheck.init(db);
 }
 
@@ -61,9 +61,6 @@ exports.executeCron = function (callback) {
 				});
 
 			});
-
-			// create moduleData object for each check with monitorClientId
-			// callback for each moduleData
 		}
 	});
 }
