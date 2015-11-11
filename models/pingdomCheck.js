@@ -6,14 +6,17 @@ exports.init = function (db) {
 
 // Create new moduleData or update existing one
 exports.insertOrUpdateChecks = function(id, pingdomCheck, callback) {
+	pingdomCheck.updatedAt = Date.now();
+	pingdomCheck.delete = false;
+
 	r.table('pingdomChecks')
 	.get(id)
 	.replace(
 		function (row) {
 			return r.branch(
 				row.eq(null),
-				r.expr(pingdomCheck).merge({createdAt: Date.now(), updatedAt: Date.now()}),
-				row.merge(pingdomCheck).merge({updatedAt: Date.now()})
+				r.expr(pingdomCheck).merge({createdAt: Date.now()}),
+				row.merge(pingdomCheck).merge({})
 			)
 		},
 		{ returnChanges: true }
@@ -39,14 +42,31 @@ exports.insertOrUpdateChecks = function(id, pingdomCheck, callback) {
 	});
 }
 
-exports.getChecksWithMonitorClientId = function() {
-	r.table('pingdomChecks')
-	.contains('monitorClientId')
-	.run()
-	.then(function(newPingdomChecks){
+// Before inserting/updating pingdomChecks, mark pingdomChecks to delete
+exports.markToDelete = function() {
+	return function(callback) {
+		r.table('pingdomChecks')
+		.update({delete: true})
+		.run()
+		.then(function(marked){
+			callback(null);
+		})
+		.error(function(err){
+			callback(err);
+		});
+	}
+}
 
+// After inserting/updating pingdomChecks, delete pingdomChecks that doesn't exist anymore
+exports.deleteMarked = function() {
+	r.table('pingdomChecks')
+	.getAll(true, {index: 'delete'})
+	.delete()
+	.run()
+	.then(function(deleted){
+		// Deleted
 	})
 	.error(function(err){
-		callback(err);
+		// Error
 	});
 }

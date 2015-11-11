@@ -14,6 +14,7 @@
   "author": "Roy Peters",
   "license": "ISC",
   "dependencies": {
+    "async": "^1.5.0",
     "pingdom-api": "^0.7.0"
   }
 }
