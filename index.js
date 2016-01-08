@@ -136,3 +136,46 @@ insertOrUpdatePingdomCheck = function(check, cb) {
 	}
 
 }
+
+exports.getRoutes = function () {
+	return [
+		{method: 'GET', pattern: '/module/monitorPingdom', function: routeGetAll},
+		{method: 'POST', pattern: '/module/monitorPingdom/update', function: routeUpdate}
+	];
+}
+
+var routeGetAll = function(req, res, next) {
+
+	// Protected route (only admins)
+	if(req.user && req.user.role != 'admin')
+		return res.status(401).json(responseMessaging.format(401));
+
+	PingdomCheck.getAll(function(err, pingdomChecks){
+		if(err)
+			res.status(500).json(responseMessaging.format(500, {}, [err]));
+		else
+			res.status(200).json(responseMessaging.format(200, pingdomChecks));
+	});
+
+}
+
+// Update pingdomCheck
+var routeUpdate = function(req, res, next) {
+
+	// Protected route (only admins)
+	if(req.user && req.user.role != 'admin')
+		return res.status(401).json(responseMessaging.format(401));
+
+	var id = req.body.id;
+	var data = {
+		monitorClientId: req.body.monitorClientId
+	};
+
+	PingdomCheck.update(id, data, function(err, pingdomCheck){
+		if(err)
+			res.status(500).json(responseMessaging.format(500, {}, [err]));
+		else			
+			res.status(200).json(responseMessaging.format(200, pingdomCheck));
+	});
+
+};

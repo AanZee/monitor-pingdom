@@ -70,3 +70,48 @@ exports.deleteMarked = function() {
 		// Error
 	});
 }
+
+// Get all pingdomChecks
+exports.getAll = function(callback){
+	r.table('pingdomChecks')
+	.run()
+	.then(function(pingdomChecks){
+		if(!pingdomChecks)
+			callback('No pingdomChecks found!');
+		else
+			callback(null, pingdomChecks);
+	})
+	.error(function(err){
+		callback(err);
+	});
+}
+
+// Update pingdomCheck
+exports.update = function(id, pingdomCheck, callback) {
+	pingdomCheck.updatedAt = Date.now();
+
+	r.table('pingdomChecks')
+	.get(id)
+	.update(pingdomCheck, {
+		returnChanges: true
+	})
+	.run()
+	.then(function(newPingdomCheck){
+		if(newPingdomCheck.errors > 0)
+			callback(newPingdomCheck.first_error);
+		
+		else {
+			if(newPingdomCheck.unchanged > 0)
+				callback(null, pingdomCheck);
+			
+			else {
+				newPingdomCheck = newPingdomCheck.changes[0].new_val;
+				
+				callback(null, newPingdomCheck);
+			}
+		}
+	})
+	.error(function(err){
+		callback(err);
+	});
+}
