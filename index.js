@@ -119,7 +119,7 @@ insertOrUpdatePingdomCheck = function(check, cb) {
 
 			else {
 				// PindomCheck is linked to monitorClient -> create moduleData and callback
-				if(pingdomCheck.monitorClientId) {
+				if(pingdomCheck.monitorClientId && pingdomCheck.monitorClientId != "") {
 					var monitorClientId = pingdomCheck.monitorClientId;
 					delete pingdomCheck.monitorClientId;
 
