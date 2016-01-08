@@ -3,6 +3,7 @@ exports.hasCron = true;
 exports.snapshotData = true;
 
 var async = require('async');
+var responseMessaging = require('monitor-response');
 var pingdomApi = null;
 var PingdomCheck = null;
 
